@@ -3,9 +3,12 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const serverless = require('serverless-http');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const postsRouter = require('./routes/posts/postsRouter');
+const usersRouter = require('./routes/users/usersRouter');
 
 var app = express();
 
@@ -14,8 +17,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
+app.use(cors());
 
-app.use('/', indexRouter);
+app.use('/posts', postsRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
@@ -34,4 +39,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+exports.handler = serverless(app);
+// module.exports = app;
